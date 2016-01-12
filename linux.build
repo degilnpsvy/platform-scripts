@@ -1,0 +1,6 @@
+cd ${BUILD_DIR}
+if ! [ -d linux-build ]; then mkdir linux-build; fi
+cd linux-build
+make -C ${TOP_DIR}/linux defconfig
+make -C ${TOP_DIR}/linux menuconfig
+make -C ${TOP_DIR}/linux bzImage -j -l4

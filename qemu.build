@@ -1,0 +1,5 @@
+cd ${BUILD_DIR}
+if ! [ -d qemu-build ]; then mkdir qemu-build; fi
+cd qemu-build
+${TOP_DIR}/qemu/configure --prefix=${TOP_DIR}/software --target-list=x86_64-softmmu
+make -j -l4 && make install

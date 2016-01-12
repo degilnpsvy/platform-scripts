@@ -1,0 +1,12 @@
+# Select BusyboxSettings->Build options->BuildBusybox as a static binary
+#  Cancel Networkingutilities->iptunel
+#  Cancel Networkingutilities->inetd
+cd ${BUILD_DIR}
+if ! [ -d busybox-build ]; then mkdir busybox-build; fi
+cd busybox-build
+
+make -C ${TOP_DIR}/busybox menuconfig
+make -C ${TOP_DIR}/busybox -j -l4
+${TOP_DIR}/scripts/rootfs.mount
+sudo make install -C ${TOP_DIR}/busybox CONFIG_PREFIX=${TOP_DIR}/rootfs
+${TOP_DIR}/scripts/rootfs.umount

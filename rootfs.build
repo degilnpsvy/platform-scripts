@@ -1,0 +1,6 @@
+dd if=/dev/zero of=${TOP_DIR}/rootfs.img bs=1M count=512
+mkfs.ext3 ${TOP_DIR}/rootfs.img
+mkdir ${TOP_DIR}/rootfs
+${TOP_DIR}/scripts/rootfs.mount
+sudo mkdir -p ${TOP_DIR}/rootfs/{dev,proc,sys}
+${TOP_DIR}/scripts/rootfs.umount
