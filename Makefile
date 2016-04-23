@@ -1,4 +1,4 @@
-export TOP_DIR:=$(shell pwd)
+yexport TOP_DIR:=$(shell pwd)
 export BUILD_DIR:=$(TOP_DIR)/build
 
 all:
