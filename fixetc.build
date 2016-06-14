@@ -1,0 +1,8 @@
+#!/bin/bash
+
+${TOP_DIR}/scripts/rootfs.mount
+cd ${TOP_DIR}/rootfs/
+sudo mkdir etc
+sudo bash -c "echo \"ttyS0::sysinit:/bin/ash\" > etc/inittable"
+cd ..
+${TOP_DIR}/scripts/rootfs.umount

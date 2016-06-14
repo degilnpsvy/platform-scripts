@@ -7,7 +7,7 @@ all:
 	./scripts/qemu.build
 	./scripts/rootfs.build
 	./scripts/busybox.build
-
+	./scripts/fixetc.build
 clean:
 	rm -rf build
 	rm -rf rootfs*
