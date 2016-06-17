@@ -1,8 +1,0 @@
-#!/bin/bash
-cd ${BUILD_DIR}
-if ! [ -d linux-build ]; then mkdir linux-build; fi
-cd linux-build
-# make -C ${TOP_DIR}/linux defconfig O=`pwd`
-# make -C ${TOP_DIR}/linux menuconfig O=`pwd`
-cp ${TOP_DIR}/scripts/linux_config .config
-make -C ${TOP_DIR}/linux bzImage -j -l4 O=`pwd`

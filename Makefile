@@ -1,13 +1,36 @@
-export TOP_DIR:=$(shell pwd)
-export BUILD_DIR:=$(TOP_DIR)/build
+TOP_DIR := $(shell pwd)
+TARGET_DIR := $(TOP_DIR)/target
+SOFTWARE_DIR := $(TOP_DIR)/software
 
-all:
-	if ! [ -d build ]; then mkdir build; fi
-	./scripts/linux.build
-	./scripts/qemu.build
-	./scripts/rootfs.build
-	./scripts/busybox.build
-	./scripts/fixetc.build
+SCRIPT_DIR :=$(TOP_DIR)/scripts
+
+LINUX_DIR := $(TOP_DIR)/linux
+LINUX_BUILD_DIR := $(TARGET_DIR)/linux-build
+
+QEMU_DIR := $(TOP_DIR)/qemu
+QEMU_BUILD_DIR := $(TARGET_DIR)/qemu-build
+
+BUSYBOX_DIR := $(TOP_DIR)/busybox
+BUSYBOX_BUILD_DIR := $(TARGET_DIR)/busybox-build
+
+ROOTFS_DIR := $(TARGET_DIR)/rootfs
+
+TARGET := build/prepare build/kernel build/qemu build/rootfs build/image
+
+include $(SCRIPT_DIR)/system.mk
+
+all: $(TARGET)
+
+.PHONY: $(TARGET) clean config menuconfig
+
+$(TARGET):
+	$($@)
+
 clean:
-	rm -rf build
-	rm -rf rootfs*
+	$(call do/clean)
+
+config menuconfig:
+	$(call do/config)
+
+%:
+	$(call do/$@)
