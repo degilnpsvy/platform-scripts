@@ -15,8 +15,9 @@ BUSYBOX_BUILD_DIR := $(TARGET_DIR)/busybox-build
 
 ROOTFS_DIR := $(TARGET_DIR)/rootfs
 
-TARGET := build/prepare build/kernel build/qemu build/rootfs build/image
+TARGET := build/prepare build/kernel build/software build/rootfs build/image
 
+include $(SCRIPT_DIR)/verbose.mk
 include $(SCRIPT_DIR)/system.mk
 
 all: $(TARGET)

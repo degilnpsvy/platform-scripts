@@ -1,1 +1,0 @@
-sudo mount -t ext3 -o loop ${TOP_DIR}/rootfs.img ${TOP_DIR}/rootfs
