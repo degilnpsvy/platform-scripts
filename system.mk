@@ -1,5 +1,7 @@
 # generic build steps
 
+build/kernel: build/rootfs
+
 define build/kernel
 	$(call do/linux)
 endef
@@ -63,38 +65,12 @@ endef
 
 define do/rootfs
 	$(call do/rootfs/prepare)
-	$(call do/rootfs/create)
-	$(call do/rootfs/install_dirs)
 	$(call do/busybox)
 endef
 
 define do/rootfs/prepare	
 	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR) ]; then mkdir -p $(ROOTFS_DIR); fi)
-endef
-
-define do/rootfs/create
-	$(call PRINT, [ROMFS] create image file)
-	$(Q)$(call EXEC, dd if=/dev/zero of=$(TARGET_DIR)/rootfs.img bs=1M count=512)
-	$(Q)$(call EXEC, mkfs.ext3 $(TARGET_DIR)/rootfs.img)
-endef
-
-define do/rootfs/install_dirs
-	$(call PRINT, [ROMFS] create directories)
-	$(call do/rootfs/mount)
-	$(Q)$(call EXEC, sudo mkdir -p $(ROOTFS_DIR)/dev)
-	$(Q)$(call EXEC, sudo mkdir -p $(ROOTFS_DIR)/proc)
-	$(Q)$(call EXEC, sudo mkdir -p $(ROOTFS_DIR)/sys)
-	$(Q)$(call EXEC, sudo mkdir -p $(ROOTFS_DIR)/etc)
-	$(Q)$(call EXEC, sudo bash -c "echo \"ttyS0::sysinit:/bin/ash\" > $(ROOTFS_DIR)/etc/inittable")
-	$(call do/rootfs/umount)
-endef
-
-define do/rootfs/mount
-	$(Q)$(call EXEC, sudo mount -t ext3 -o loop $(TARGET_DIR)/rootfs.img $(ROOTFS_DIR))
-endef
-
-define do/rootfs/umount
-	$(Q)$(call EXEC, sudo umount $(ROOTFS_DIR))
+	$(Q)$(call EXEC, cp $(TOP_DIR)/scripts/romfs.txt $(TARGET_DIR)/romfs.txt)
 endef
 
 # busybox build steps
@@ -117,13 +93,9 @@ endef
 
 define do/busybox/install
 	$(call PRINT, [ROMFS] install busybox)
-	$(call do/rootfs/mount)
-	$(Q)$(call EXEC, sudo make install -C $(BUSYBOX_DIR) CONFIG_PREFIX=$(ROOTFS_DIR) O=$(BUSYBOX_BUILD_DIR))
-	$(call do/rootfs/umount)
+	$(Q)$(call EXEC, make install -C $(BUSYBOX_DIR) CONFIG_PREFIX=$(ROOTFS_DIR) O=$(BUSYBOX_BUILD_DIR))
+	$(Q)$(call EXEC, ln -s bin/busybox $(ROOTFS_DIR)/init)
 endef
-
-
-
 
 # SYSTEM build steps
 

@@ -13,7 +13,7 @@ QEMU_BUILD_DIR := $(TARGET_DIR)/qemu-build
 BUSYBOX_DIR := $(TOP_DIR)/busybox
 BUSYBOX_BUILD_DIR := $(TARGET_DIR)/busybox-build
 
-ROOTFS_DIR := $(TARGET_DIR)/rootfs
+ROOTFS_DIR := $(TARGET_DIR)/romfs
 
 TARGET := build/prepare build/kernel build/software build/rootfs build/image
 
