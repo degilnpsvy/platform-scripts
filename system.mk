@@ -94,7 +94,7 @@ endef
 define do/busybox/install
 	$(call PRINT, [ROMFS] install busybox)
 	$(Q)$(call EXEC, make install -C $(BUSYBOX_DIR) CONFIG_PREFIX=$(ROOTFS_DIR) O=$(BUSYBOX_BUILD_DIR))
-	$(Q)$(call EXEC, ln -s bin/busybox $(ROOTFS_DIR)/init)
+	$(Q)$(call EXEC, if ! [ -f $(ROOTFS_DIR)/init ]; then ln -s bin/busybox $(ROOTFS_DIR)/init; fi)
 endef
 
 # SYSTEM build steps
@@ -112,7 +112,7 @@ endef
 
 define do/linux/config
 	$(call do/linux/prepare)
-	$(Q)$(MAKE) -C $(LINUX_DIR) defconfig O=$(LINUX_BUILD_DIR)
+	$(Q)$(MAKE) -C $(LINUX_DIR) alldefconfig O=$(LINUX_BUILD_DIR)
 	$(Q)$(MAKE) -C $(LINUX_DIR) menuconfig O=$(LINUX_BUILD_DIR)
 endef
 
