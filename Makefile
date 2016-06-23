@@ -7,6 +7,9 @@ SCRIPT_DIR :=$(TOP_DIR)/scripts
 LINUX_DIR := $(TOP_DIR)/linux
 LINUX_BUILD_DIR := $(TARGET_DIR)/linux-build
 
+MODULE_DIR := $(TOP_DIR)/module
+MODULE_BUILD_DIR := $(TARGET_DIR)/module-build
+
 QEMU_DIR := $(TOP_DIR)/qemu
 QEMU_BUILD_DIR := $(TARGET_DIR)/qemu-build
 

@@ -18,10 +18,46 @@ define build/image
 endef
 
 define do/clean
+	$(call PRINT, [CLEAN] clean target directory)
 	$(Q)$(call EXEC, rm -rf $(TARGET_DIR))
+	$(call do/module/clean)
 endef
 
 # linux build steps
+
+define do/module
+	$(call do/module/prepare)
+	$(call do/module/compile)
+	$(call do/module/install)
+endef
+
+define do/module/compile
+	$(call PRINT, [BUILD] building kernel module)
+	$(Q)for d in $(wildcard $(MODULE_DIR)/*) ; do\
+	if [ -d $${d} ] ; then echo $${d##*/}; $(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR)) ; fi;\
+	done
+endef
+
+define do/module/install
+	$(call PRINT, [ROMFS] install kernel module)
+	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR)/module ]; then mkdir -p $(ROOTFS_DIR)/module; fi)
+	$(Q)for d in $(wildcard $(MODULE_DIR)/*) ; do\
+	if [ -d $${d} ] ; then echo $${d##*/}; $(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR) INSTALL_MODULE_DIR=$(ROOTFS_DIR)/module install); fi;\
+	done
+endef
+
+define do/module/clean
+	$(call PRINT, [CLEAN] clean kernel module)
+	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR)/module ]; then mkdir -p $(ROOTFS_DIR)/module; fi)
+	$(Q)for d in $(wildcard $(MODULE_DIR)/*) ; do\
+	if [ -d $${d} ] ; then echo $${d##*/}; $(call EXEC, $(MAKE) -C $${d} clean); fi;\
+	done
+
+endef
+
+define do/module/prepare
+	$(Q)$(call EXEC, if ! [ -d $(MODULE_BUILD_DIR) ]; then mkdir -p $(MODULE_BUILD_DIR); fi)
+endef
 
 define do/linux
 	$(call do/linux/prepare)
@@ -30,12 +66,15 @@ endef
 
 define do/linux/compile
 	$(call PRINT, [BUILD] building kernel vmlinux)
-	$(Q)$(call EXEC, if ! [ -f $(LINUX_BUILD_DIR)/.config ]; then cp $(SCRIPT_DIR)/linux_config $(LINUX_BUILD_DIR)/.config; fi)
 	$(Q)$(call EXEC, $(MAKE) -C $(LINUX_DIR) bzImage -j -l4 O=$(LINUX_BUILD_DIR) V=$(VERBOSE))
 endef
 
 define do/linux/prepare
 	$(Q)$(call EXEC, if ! [ -d $(LINUX_BUILD_DIR) ]; then mkdir -p $(LINUX_BUILD_DIR); fi)
+	$(Q)$(call EXEC, if ! [ -f $(LINUX_BUILD_DIR)/.config ]; then cp $(SCRIPT_DIR)/linux_config $(LINUX_BUILD_DIR)/.config; fi)
+	$(Q)$(call EXEC, $(MAKE) -C $(LINUX_DIR) oldconfig O=$(LINUX_BUILD_DIR) V=$(VERBOSE))
+	$(Q)$(call EXEC, $(MAKE) -C $(LINUX_DIR) scripts O=$(LINUX_BUILD_DIR) V=$(VERBOSE))
+	$(Q)$(call EXEC, $(MAKE) -C $(LINUX_DIR) prepare O=$(LINUX_BUILD_DIR) V=$(VERBOSE))
 endef
 
 # qemu build steps
@@ -66,6 +105,8 @@ endef
 define do/rootfs
 	$(call do/rootfs/prepare)
 	$(call do/busybox)
+	$(call do/linux/prepare)
+	$(call do/module)
 endef
 
 define do/rootfs/prepare	
