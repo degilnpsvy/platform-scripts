@@ -19,8 +19,16 @@ endef
 
 define do/clean
 	$(call PRINT, [CLEAN] clean target directory)
-	$(Q)$(call EXEC, rm -rf $(TARGET_DIR))
+	$(call do/target/clean)
 	$(call do/module/clean)
+endef
+
+define do/target/clean
+	$(Q)$(call EXEC, rm -rf $(TARGET_DIR))
+endef
+
+define do/romfs/clean
+	$(Q)$(call EXEC, rm -rf $(ROOTFS_DIR))
 endef
 
 # linux build steps
@@ -42,8 +50,10 @@ define do/module/install
 	$(call PRINT, [ROMFS] install kernel module)
 	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR)/module ]; then mkdir -p $(ROOTFS_DIR)/module; fi)
 	$(Q)for d in $(wildcard $(MODULE_DIR)/*) ; do\
-	if [ -d $${d} ] ; then echo $${d##*/}; $(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR) INSTALL_MODULE_DIR=$(ROOTFS_DIR)/module install); fi;\
-	done
+	if [ -d $${d} ] ; then echo $${d##*/}; \
+	cp $${d}/*.ko $(ROOTFS_DIR)/module/ ; \
+	fi; done
+$(Q)#$(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR) INSTALL_MODULE_DIR=$(ROOTFS_DIR) install);
 endef
 
 define do/module/clean
@@ -56,7 +66,6 @@ define do/module/clean
 endef
 
 define do/module/prepare
-	$(Q)$(call EXEC, if ! [ -d $(MODULE_BUILD_DIR) ]; then mkdir -p $(MODULE_BUILD_DIR); fi)
 endef
 
 define do/linux
