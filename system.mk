@@ -116,11 +116,18 @@ define do/rootfs
 	$(call do/busybox)
 	$(call do/linux/prepare)
 	$(call do/module)
+	$(call do/rootfs/install)
 endef
 
 define do/rootfs/prepare	
 	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR) ]; then mkdir -p $(ROOTFS_DIR); fi)
 	$(Q)$(call EXEC, cp $(TOP_DIR)/scripts/romfs.txt $(TARGET_DIR)/romfs.txt)
+endef
+
+define do/rootfs/install
+	$(call PRINT, [ROMFS] install inittab)
+	$(Q)$(call EXEC, if ! [ -d $(ROOTFS_DIR)/etc ]; then mkdir -p $(ROOTFS_DIR)/etc; fi)
+	$(Q)$(call EXEC, cp $(TOP_DIR)/scripts/inittab $(ROOTFS_DIR)/etc/)
 endef
 
 # busybox build steps
