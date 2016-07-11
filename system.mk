@@ -52,8 +52,8 @@ define do/module/install
 	$(Q)for d in $(wildcard $(MODULE_DIR)/*) ; do\
 	if [ -d $${d} ] ; then echo $${d##*/}; \
 	cp $${d}/*.ko $(ROOTFS_DIR)/module/ ; \
+	$(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR) INSTALL_MODULE_DIR=$(ROOTFS_DIR) install) ; \
 	fi; done
-$(Q)#$(call EXEC, $(MAKE) -C $${d} LINUX_DIR=$(LINUX_DIR) LINUX_BUILD_DIR=$(LINUX_BUILD_DIR) INSTALL_MODULE_DIR=$(ROOTFS_DIR) install);
 endef
 
 define do/module/clean
