@@ -1,1 +1,1 @@
-./software/bin/qemu-system-i386 -kernel ./target/linux-build/arch/i386/boot/bzImage -monitor stdio
+./software/bin/qemu-system-x86_64 -kernel ./target/linux-build/arch/x86_64/boot/bzImage -monitor stdio

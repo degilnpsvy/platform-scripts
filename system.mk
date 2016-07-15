@@ -21,6 +21,7 @@ define do/clean
 	$(call PRINT, [CLEAN] clean target directory)
 	$(call do/target/clean)
 	$(call do/module/clean)
+	$(call do/romfs/clean)
 endef
 
 define do/target/clean
@@ -175,12 +176,12 @@ endef
 
 define do/qemu/config
 	$(call do/qemu/prepare)
-	$(Q)$(call EXEC,cd $(QEMU_BUILD_DIR) && $(QEMU_DIR)/configure --prefix=$(SOFTWARE_DIR) --target-list=i386-softmmu)
+	$(Q)$(call EXEC,cd $(QEMU_BUILD_DIR) && $(QEMU_DIR)/configure --prefix=$(SOFTWARE_DIR) --target-list=x86_64-softmmu)
 endef
 
 define do/busybox/config
 	$(call do/busybox/prepare)
-	$(Q)$(call EXEC, $(MAKE) -C $(BUSYBOX_DIR) menuconfig O=$(BUSYBOX_BUILD_DIR))
+	$(Q)$(MAKE) -C $(BUSYBOX_DIR) menuconfig O=$(BUSYBOX_BUILD_DIR)
 endef
 
 # other functions
